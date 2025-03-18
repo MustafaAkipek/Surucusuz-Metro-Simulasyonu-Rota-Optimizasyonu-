@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 
-G = nx.Graph() # Create a graph
+G = nx.Graph() # Graph oluşturuldu
 
-# Add nodes
+# Düğümler oluşturuldu(istasyonlar)
 G.add_nodes_from([
     ("K1", {"name": "Kızılay", "hat": "Kırmızı Hat"}),
     ("K2", {"name": "Ulus", "hat": "Kırmızı Hat"}),
@@ -19,6 +19,7 @@ G.add_nodes_from([
     ("T4", {"name": "Keçiören", "hat": "Turuncu Hat"})
 ])
 
+# Düğümler arası bağlantılar(kenarlar)
 G.add_edges_from([
     ("K1", "K2", {"weight": 4}),
     ("K2", "K3", {"weight": 6}),
@@ -34,6 +35,7 @@ G.add_edges_from([
     ("M4", "T3", {"weight": 2})
 ])
 
+# Düğümlerin pozisyonları
 pos = {
     "K1": (4.5, 6.6),
     "K2": (3.0, 5.0),
@@ -49,13 +51,16 @@ pos = {
     "T4": (0.5, 0.2)
 }
 
+# Düğümlerin pozisyonlarına göre düğüm etiketlerinin konumları
 pos_node_attributes = {}
 for node, (x, y) in pos.items():
     pos_node_attributes[node] = (x - 0.5 , y + 0.2)    
 
+# Düğümlerin ve kenarların etiketleri
 node_labels = {n:(d["name"], d["hat"]) for n, d in G.nodes(data=True)}
 edge_labels = {(u, v): d["weight"] for u, v, d in G.edges(data=True)}
 
+# Grafik çizimi
 nx.draw(G, pos=pos, with_labels=True,
         node_color = "red", node_size = 1500,
         font_color = "white", font_size = 20, font_family = "Times New Roman", font_weight="bold",
