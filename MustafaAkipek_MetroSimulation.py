@@ -16,6 +16,9 @@ class Istasyon:
         # İstasyona komşu bir istasyon ekler ve aralarındaki süreyi belirtir
         self.komsular.append((istasyon, sure))
 
+    def __str__(self):
+        return self.ad
+
 class MetroAgi:
     def __init__(self):
         # MetroAgi sınıfının yapıcı metodu. Metro ağı içindeki istasyonları ve hatları tutar.
@@ -50,13 +53,33 @@ class MetroAgi:
         - Ziyaret edilen istasyonları takip edin
         - Her adımda komşu istasyonları keşfedin
         """
-        # TODO: Bu fonksiyonu tamamlayın
-        pass
-        if baslangic_id not in self.istasyonlar or hedef_id not in self.istasyonlar:
-            return None
-        baslangic = self.istasyonlar[baslangic_id]
+        
+        # eğer her 2 istasyon da mevcut ise onları değişkenlere atadık
+        baslangic = self.istasyonlar[baslangic_id] 
         hedef = self.istasyonlar[hedef_id]
-        ziyaret_edildi = {baslangic}        
+        ziyaret_edildi = {baslangic}      
+        
+        kuyruk = deque([(baslangic, [baslangic])])  # (İstasyon, şu ana kadar izlenen rota)
+        ziyaret_edildi = set()  # Ziyaret edilenleri takip et
+
+        # BFS Algoritması
+        while kuyruk:
+            istasyon, rota = kuyruk.popleft()  # Kuyruğun başındaki istasyonu al
+            
+            # Hedefe ulaştıysak rotayı döndür
+            if istasyon == hedef:
+                return rota
+            
+            # Ziyaret edilenlere ekleyip, komşuları kuyruğa ekle
+            if istasyon not in ziyaret_edildi:
+                ziyaret_edildi.add(istasyon)
+                
+                for komsu, _ in istasyon.komsular:
+                    if komsu not in ziyaret_edildi:
+                        kuyruk.append((komsu, rota + [komsu]))
+
+        # Eğer hedefe ulaşamadıysan None döndür
+        return None  
 
 
     def en_hizli_rota_bul(self, baslangic_id: str, hedef_id: str) -> Optional[Tuple[List[Istasyon], int]]:
