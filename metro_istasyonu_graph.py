@@ -53,21 +53,23 @@ pos = {
 
 # Düğümlerin pozisyonlarına göre düğüm etiketlerinin konumları
 pos_node_attributes = {}
-for node, (x, y) in pos.items():
-    pos_node_attributes[node] = (x - 0.5 , y + 0.2)    
+for node, (x, y) in pos.items(): # burada x ve y değerlerini düğümlerin etiketlerinin konumunu belirlemek için ayarladım
+    pos_node_attributes[node] = (x - 0.5 , y + 0.2) # düğümlerin etiketlerini düğümlerin pozisyonlarına göre ayarladım(sol üstte olacak şekilde)
 
 # Düğümlerin ve kenarların etiketleri
-node_labels = {n:(d["name"], d["hat"]) for n, d in G.nodes(data=True)}
-edge_labels = {(u, v): d["weight"] for u, v, d in G.edges(data=True)}
+node_labels = {n:(d["name"], d["hat"]) for n, d in G.nodes(data=True)} # düğümlerin etiketlerini düğümlerin name ve hat değerlerine göre ayarladım
+edge_labels = {(u, v): d["weight"] for u, v, d in G.edges(data=True)} # kenarların etiketlerini kenarların weight değerlerine göre ayarladım
 
 # Grafik çizimi
 nx.draw(G, pos=pos, with_labels=True,
         node_color = "red", node_size = 1500,
         font_color = "white", font_size = 20, font_family = "Times New Roman", font_weight="bold",
         edge_color = "lightgray",
-        width = 5)
+        width = 5) # düğümleri ve kenarları çizdim bir takım özelleştirmeler ile
 
-
+# Düğümlerin ve kenarların etiketlerini çizime ekledim
 nx.draw_networkx_labels(G, pos = pos_node_attributes, labels = node_labels, font_color = "black", font_size = 10, font_family = "Times New Roman", font_weight="bold")
+
+# Kenarların etiketlerini çizime ekledim
 nx.draw_networkx_edge_labels(G, pos = pos, edge_labels = edge_labels, label_pos = 0.5)
-plt.show()
+plt.show() # grafiği gösterdim
