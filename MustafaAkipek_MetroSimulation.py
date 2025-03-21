@@ -54,19 +54,18 @@ class MetroAgi:
         - Her adımda komşu istasyonları keşfedin
         """
         
-        # eğer her 2 istasyon da mevcut ise onları değişkenlere atadık
+        # Eğer her 2 istasyon da mevcut ise onları değişkenlere atadık
         baslangic = self.istasyonlar[baslangic_id] 
         hedef = self.istasyonlar[hedef_id]
         ziyaret_edildi = {baslangic}      
         
         queue = deque([(baslangic, [baslangic])])  # (İstasyon, şu ana kadar izlenen rota)
-        ziyaret_edildi = set()  # Ziyaret edilenleri takip et
+        ziyaret_edildi = set()  # Ziyaret edilenleri takip etmek için bir set oluşturduk(böylece bir daha aynı yeri tekrar ziyaret etmeyeceğiz)
 
-        # BFS Algoritması
         while queue:
             istasyon, rota = queue.popleft()  # Kuyruğun başındaki istasyonu al
             
-            # Hedef istasyona ulaşıldıysa, rotayı döndür ve bitir
+            # Hedef istasyona ulaştıysak, rotayı döndür ve bitir
             if istasyon == hedef:
                 return rota
             
