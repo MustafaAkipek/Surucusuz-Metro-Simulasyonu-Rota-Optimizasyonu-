@@ -111,6 +111,51 @@ class MetroAgi:
         hedef = self.istasyonlar[hedef_id]
         ziyaret_edildi = set()
 
+        open_list = []
+        heapq.heappush(open_list, (heuristic[baslangic_id], 0, id(baslangic), baslangic, []))  # (f, g, id, istasyon, yol)
+        
+        ziyaret_edildi = set()  # Ziyaret edilen istasyonları takip et
+
+        while open_list:
+            _, g, _, istasyon, rota = heapq.heappop(open_list)  # Kuyruğun başındaki düğümü alarak başlarız
+
+            if istasyon in ziyaret_edildi: # Eğer istasyon ziyaret edildiyse atla
+                continue
+
+            rota = rota + [istasyon]  # İstasyon ziyaret edilmemiş ise rotaya ekle
+
+            # Hedefe ulaştıysak rotayı ve toplam süreyi döndürür
+            if istasyon == hedef:
+                return rota, g
+
+            ziyaret_edildi.add(istasyon)  # Hedefe ulaşmadıysak, ziyaret edildi olarak işaretleriz
+
+            # Komşuları gezeriz ve uygun olanları kuyruğa(queue) ekleriz
+            for komsu, sure in istasyon.komsular:
+                if komsu not in ziyaret_edildi:
+                    g_new = g + sure
+                    f_new = g_new + heuristic.get(komsu.idx, 0)  # Heuristic değerini ile gerçek değeri toplayarak yeni f(n) değerini buluruz
+                    heapq.heappush(open_list, (f_new, g_new, id(komsu), komsu, rota))
+
+        # Eğer hedefe ulaşamazsak None döndürürüz
+        return None
+
+# Heuristic değerleri aktarma olan duraklar da 2 diğer duraklarda 0 olacak şekilde belirledim
+heuristic = {
+    "K1": 2,  # Kızılay
+    "K2": 0,
+    "K3": 2,  # Demetevler
+    "K4": 0,
+    "M1": 0,
+    "M2": 2,  # Kızılay (Mavi Hat)
+    "M3": 0,
+    "M4": 2,  # Gar
+    "T1": 0,
+    "T2": 2,  # Demetevler (Turuncu Hat)
+    "T3": 2,  # Gar (Turuncu Hat)
+    "T4": 0
+}  
+
 # Örnek Kullanım
 if __name__ == "__main__":
     metro = MetroAgi()
