@@ -77,11 +77,11 @@ class MetroAgi:
             ziyaret_edildi.add(istasyon)  # İstasyonu ziyaret edildi olarak işaretle
 
             # Komşuları kuyruğa ekle
-            for komsu, _ in istasyon.komsular:  # Sadece istasyonu al, süreyi almasını istemediğimiz için "," den sonra _ kullandık
-                if komsu in ziyaret_edildi:
+            for neighbor, _ in istasyon.komsular:  # Sadece istasyonu al, süreyi almasını istemediğimiz için "," den sonra _ kullandık
+                if neighbor in ziyaret_edildi:
                     continue  # Ziyaret edildiyse işlemi atla
                 
-                queue.append((komsu, rota + [komsu]))  # Yeni rota ekliyoruz
+                queue.append((neighbor, rota + [neighbor]))  # Yeni rota ekliyoruz
 
         # Eğer hedefe ulaşamazsak None döndürülecek
         return None  
