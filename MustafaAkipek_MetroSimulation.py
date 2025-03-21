@@ -59,26 +59,31 @@ class MetroAgi:
         hedef = self.istasyonlar[hedef_id]
         ziyaret_edildi = {baslangic}      
         
-        kuyruk = deque([(baslangic, [baslangic])])  # (İstasyon, şu ana kadar izlenen rota)
+        queue = deque([(baslangic, [baslangic])])  # (İstasyon, şu ana kadar izlenen rota)
         ziyaret_edildi = set()  # Ziyaret edilenleri takip et
 
         # BFS Algoritması
-        while kuyruk:
-            istasyon, rota = kuyruk.popleft()  # Kuyruğun başındaki istasyonu al
+        while queue:
+            istasyon, rota = queue.popleft()  # Kuyruğun başındaki istasyonu al
             
-            # Hedefe ulaştıysak rotayı döndür
+            # Hedef istasyona ulaşıldıysa, rotayı döndür ve bitir
             if istasyon == hedef:
                 return rota
             
-            # Ziyaret edilenlere ekleyip, komşuları kuyruğa ekle
-            if istasyon not in ziyaret_edildi:
-                ziyaret_edildi.add(istasyon)
-                
-                for komsu, _ in istasyon.komsular:
-                    if komsu not in ziyaret_edildi:
-                        kuyruk.append((komsu, rota + [komsu]))
+            # Eğer istasyon daha önce ziyaret edildiyse(atlamamız lazım)
+            if istasyon in ziyaret_edildi:
+                continue  # Zaten ziyaret edildiyse işlemi atla
+            
+            ziyaret_edildi.add(istasyon)  # İstasyonu ziyaret edildi olarak işaretle
 
-        # Eğer hedefe ulaşamadıysan None döndür
+            # Komşuları kuyruğa ekle
+            for komsu, _ in istasyon.komsular:  # Sadece istasyonu al, süreyi almasını istemediğimiz için "," den sonra _ kullandık
+                if komsu in ziyaret_edildi:
+                    continue  # Ziyaret edildiyse işlemi atla
+                
+                queue.append((komsu, rota + [komsu]))  # Yeni rota ekliyoruz
+
+        # Eğer hedefe ulaşamazsak None döndürülecek
         return None  
 
 
