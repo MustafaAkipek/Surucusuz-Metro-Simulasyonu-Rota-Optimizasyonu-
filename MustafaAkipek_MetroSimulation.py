@@ -16,9 +16,6 @@ class Istasyon:
         # İstasyona komşu bir istasyon ekler ve aralarındaki süreyi belirtir
         self.komsular.append((istasyon, sure))
 
-    def __str__(self):
-        return self.ad
-
 class MetroAgi:
     def __init__(self):
         # MetroAgi sınıfının yapıcı metodu. Metro ağı içindeki istasyonları ve hatları tutar.
@@ -53,8 +50,11 @@ class MetroAgi:
         - Ziyaret edilen istasyonları takip edin
         - Her adımda komşu istasyonları keşfedin
         """
-        
+
         # Eğer her 2 istasyon da mevcut ise onları değişkenlere atadık
+        if baslangic_id not in self.istasyonlar or hedef_id not in self.istasyonlar:
+            return None
+        
         baslangic = self.istasyonlar[baslangic_id] 
         hedef = self.istasyonlar[hedef_id]
         ziyaret_edildi = {baslangic}      
@@ -73,7 +73,7 @@ class MetroAgi:
             if istasyon in ziyaret_edildi:
                 continue  # Zaten ziyaret edildiyse işlemi atla
             
-            ziyaret_edildi.add(istasyon)  # İstasyonu ziyaret edildi olarak işaretle
+            ziyaret_edildi.add(istasyon) # İstasyonu ziyaret edildi olarak işaretle(yani set() yapısının içine ekleriz)
 
             # Komşuları kuyruğa ekle
             for neighbor, _ in istasyon.komsular:  # Sadece istasyonu al, süreyi almasını istemediğimiz için "," den sonra _ kullandık
@@ -84,7 +84,6 @@ class MetroAgi:
 
         # Eğer hedefe ulaşamazsak None döndürülecek
         return None  
-
 
     def en_hizli_rota_bul(self, baslangic_id: str, hedef_id: str) -> Optional[Tuple[List[Istasyon], int]]:
         """A* algoritması kullanarak en hızlı rotayı bulur
@@ -101,22 +100,22 @@ class MetroAgi:
         - Her adımda toplam süreyi hesaplayın
         - En düşük süreye sahip rotayı seçin
         """
-        # TODO: Bu fonksiyonu tamamlayın
-        pass
+
+        # Eğer her 2 istasyon da mevcut ise onları değişkenlere atadık
         if baslangic_id not in self.istasyonlar or hedef_id not in self.istasyonlar:
             return None
 
         baslangic = self.istasyonlar[baslangic_id]
         hedef = self.istasyonlar[hedef_id]
-        ziyaret_edildi = set()
+        ziyaret_edildi = set() # Ziyaret edilen istasyonları takip etmek için set() oluşturduk
 
-        open_list = []
+        open_list = [] # Öncelik kuyruğu oluşturduk heapq için
+
+        # id eklememin sebebi iki tane nesne karşılaştıralamaz hatası almak için
         heapq.heappush(open_list, (heuristic[baslangic_id], 0, id(baslangic), baslangic, []))  # (f, g, id, istasyon, yol)
         
-        ziyaret_edildi = set()  # Ziyaret edilen istasyonları takip et
-
         while open_list:
-            _, g, _, istasyon, rota = heapq.heappop(open_list)  # Kuyruğun başındaki düğümü alarak başlarız
+            _, g, _, istasyon, rota = heapq.heappop(open_list)  # Kullanmayacaklarımızı _ ile belirttik
 
             if istasyon in ziyaret_edildi: # Eğer istasyon ziyaret edildiyse atla
                 continue
@@ -132,11 +131,51 @@ class MetroAgi:
             # Komşuları gezeriz ve uygun olanları kuyruğa(queue) ekleriz
             for komsu, sure in istasyon.komsular:
                 if komsu not in ziyaret_edildi:
-                    g_new = g + sure
-                    f_new = g_new + heuristic.get(komsu.idx, 0)  # Heuristic değerini ile gerçek değeri toplayarak yeni f(n) değerini buluruz
+                    g_new = g + sure # g(n)' i güncelledik
+                    f_new = g_new + heuristic.get(komsu.idx, 0)  # h(n) ile g(n)' i toplayarak yeni f(n) değerini buluruz
                     heapq.heappush(open_list, (f_new, g_new, id(komsu), komsu, rota))
 
         # Eğer hedefe ulaşamazsak None döndürürüz
+        return None
+    
+    def en_kisa_maliyetli_rota_bul(self, baslangic_id: str, hedef_id: str):
+        """UCS (Uniform Cost Search) ile en düşük maliyetli rotayı buluruz."""
+        baslangic = self.istasyonlar[baslangic_id]
+        hedef = self.istasyonlar[hedef_id]
+    
+        # Başlangıç ve hedef istasyonların varlığını kontrol et
+        if baslangic_id not in self.istasyonlar or hedef_id not in self.istasyonlar:
+            return None
+
+        baslangic = self.istasyonlar[baslangic_id]
+        hedef = self.istasyonlar[hedef_id]
+        visited = set() # Ziyaret edilen istasyonları takip etmek için 
+
+        queue = []
+
+         # id' nin eklenmesinin sebebi iki nesneyi karşılaştıramazsın hatasını almamak için ekledim
+        heapq.heappush(queue, (0, id(baslangic), baslangic, [])) # (Toplam maliyet, id, İstasyon, Rota) 
+
+        while queue:
+            maliyet, _, istasyon, rota = heapq.heappop(queue) # kullanmayacağımızı kısımları _ ile belirttik
+
+            if istasyon in visited: # istasyon ziyaret edildiyse atla
+                continue
+
+            visited.add(istasyon) # istasyonu ziyaret edilenlere ekledik
+            rota = rota + [istasyon] # istasyonu rotamıza dahil ettik
+
+            # Hedefe ulaştıysak rotayı döndür
+            if istasyon == hedef:
+                return rota, maliyet
+
+            # Komşuları gez ve uygun olanları kuyruğa ekle
+            for komsu, sure in istasyon.komsular:
+                if komsu not in visited:
+
+                    # id(komsu), her nesneye özel bir sayı döndürür ve heap bunu sıralayabilir. Bu yüzden ekledim ki iki nesne karşılaştırılamaz hatasını almamak için
+                    heapq.heappush(queue, (maliyet + sure, id(komsu), komsu, rota)) #  eğer ziyaret edilmemişse heap' e ekleme yap
+
         return None
 
 # Heuristic değerleri aktarma olan duraklar da 2 diğer duraklarda 0 olacak şekilde belirledim
@@ -212,6 +251,11 @@ if __name__ == "__main__":
     if sonuc:
         rota, sure = sonuc
         print(f"En hızlı rota ({sure} dakika):", " -> ".join(i.ad for i in rota))
+
+    ucs_sonuc = metro.en_kisa_maliyetli_rota_bul("M1", "K4")
+    if ucs_sonuc:
+        rota, maliyet = ucs_sonuc
+        print(f"En düşük maliyetli rota ({maliyet} dakika):", " -> ".join(i.ad for i in rota))
     
     # Senaryo 2: Batıkent'ten Keçiören'e
     print("\n2. Batıkent'ten Keçiören'e:")
@@ -223,6 +267,11 @@ if __name__ == "__main__":
     if sonuc:
         rota, sure = sonuc
         print(f"En hızlı rota ({sure} dakika):", " -> ".join(i.ad for i in rota))
+
+    ucs_sonuc = metro.en_kisa_maliyetli_rota_bul("T1", "T4")
+    if ucs_sonuc:
+        rota, maliyet = ucs_sonuc
+        print(f"En düşük maliyetli rota ({maliyet} dakika):", " -> ".join(i.ad for i in rota))
     
     # Senaryo 3: Keçiören'den AŞTİ'ye
     print("\n3. Keçiören'den AŞTİ'ye:")
@@ -234,3 +283,8 @@ if __name__ == "__main__":
     if sonuc:
         rota, sure = sonuc
         print(f"En hızlı rota ({sure} dakika):", " -> ".join(i.ad for i in rota)) 
+
+    ucs_sonuc = metro.en_kisa_maliyetli_rota_bul("T4", "M1")
+    if ucs_sonuc:
+        rota, maliyet = ucs_sonuc
+        print(f"En düşük maliyetli rota ({maliyet} dakika):", " -> ".join(i.ad for i in rota))
