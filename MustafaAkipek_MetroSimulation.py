@@ -1,6 +1,9 @@
 from collections import defaultdict, deque
 import heapq
 from typing import Dict, List, Set, Tuple, Optional
+import tkinter as tk
+from tkinter import ttk, messagebox
+import metro_station_graph
 
 class Istasyon:
     def __init__(self, idx: str, ad: str, hat: str):
@@ -288,3 +291,96 @@ if __name__ == "__main__":
     if ucs_sonuc:
         rota, maliyet = ucs_sonuc
         print(f"En düşük maliyetli rota ({maliyet} dakika):", " -> ".join(i.ad for i in rota))
+
+
+# 📌 İstasyon isimlerini ve kodlarını eşleştirdiğim sözlük
+istasyon_kodlari = {
+    "Kızılay(K1-Kırmızı Hat)" : "K1",
+    "Ulus(K2-Kırmızı Hat)": "K2",
+    "Demetevler(K3-Kırmızı Hat)": "K3",
+    "OSB(K4-Kırmızı Hat)": "K4",
+    "AŞTİ(M1-Mavi Hat)": "M1",
+    "Kızılay(M2-Mavi Hat)": "M2",
+    "Sıhhiye(M3-Mavi Hat)": "M3",
+    "Gar(M4-Mavi Hat)": "M4",
+    "Batıkent(T1-Turuncu Hat)": "T1",
+    "Demetevler(T2-Turuncu Hat)": "T2",
+    "Gar(T3-Turuncu Hat)": "T3",
+    "Keçiören(T4-Turuncu Hat)": "T4"
+}
+
+# Tkinter ana pencereyi oluştur
+root = tk.Tk()
+root.title("Sürücüsüz Metro Simülasyonu")
+root.geometry("400x300")
+
+# 📌 İstasyonları Göster Butonu(Graph' ın görsel halini açar)
+def istasyonlari_goster():
+    metro_station_graph.show_graph(metro_station_graph.G)  # metro_station_graph.py içindeki fonksiyon çağrılır
+
+btn_goster = tk.Button(root, text="İstasyonları Göster", command=istasyonlari_goster)
+btn_goster.pack(pady=5)
+
+# 📌 Başlangıç İstasyonu Seçimi
+tk.Label(root, text="Başlangıç İstasyonu:").pack()
+baslangic_var = tk.StringVar()
+baslangic_cb = ttk.Combobox(root, textvariable=baslangic_var, values=list(istasyon_kodlari.keys()))
+baslangic_cb.pack()
+
+# 📌 İniş İstasyonu Seçimi
+tk.Label(root, text="Varış İstasyonu:").pack()
+varis_var = tk.StringVar()
+varis_cb = ttk.Combobox(root, textvariable=varis_var, values=list(istasyon_kodlari.keys()))
+varis_cb.pack()
+
+# 📌 Rota Tipi Seçimi
+tk.Label(root, text="Rota Tipi:").pack()
+rota_tipi_var = tk.StringVar()
+rota_tipi_cb = ttk.Combobox(root, textvariable=rota_tipi_var, values=["En Az Aktarmalı", "En Hızlı", "En Kısa Maliyetli"])
+rota_tipi_cb.pack()
+
+# 📌 Rotayı Göster Butonu
+def rotayi_goster():
+    secilen_baslangic = baslangic_var.get()
+    secilen_varis = varis_var.get()
+    rota_tipi = rota_tipi_var.get()
+
+    if not secilen_baslangic or not secilen_varis or not rota_tipi:
+        messagebox.showerror("Hata", "Lütfen tüm seçimleri yapın!")
+        return
+
+    # 📌 Seçilen istasyon adlarını, istasyon kodlarına dönüştür
+    baslangic_kodu = istasyon_kodlari.get(secilen_baslangic)
+    varis_kodu = istasyon_kodlari.get(secilen_varis)
+
+    if not baslangic_kodu or not varis_kodu:
+        messagebox.showerror("Hata", "Geçersiz istasyon seçildi!")
+        return
+
+    # Kullanıcının seçimine göre istenilen algoritmayı çalıştırır
+    if rota_tipi == "En Az Aktarmalı":
+        sonuc = metro.en_az_aktarma_bul(baslangic_kodu, varis_kodu)
+    elif rota_tipi == "En Hızlı":
+        sonuc = metro.en_hizli_rota_bul(baslangic_kodu, varis_kodu)
+    elif rota_tipi == "En Kısa Maliyetli":
+        sonuc = metro.en_kisa_maliyetli_rota_bul(baslangic_kodu, varis_kodu)
+    else:
+        messagebox.showerror("Hata", "Geçersiz rota tipi seçildi!")
+        return
+
+    # Sonucu göster
+    if sonuc:
+        if isinstance(sonuc, tuple):  # A* ve UCS için bu bloğa girecek (rota, süre)
+            rota, sure = sonuc
+            mesaj = f"Rota: {' -> '.join(ist.ad for ist in rota)}\nSüre: {sure} dakika"
+        else:  # BFS için (sadece rota listesi döner)
+            mesaj = f"Rota: {' -> '.join(ist.ad for ist in sonuc)}"
+
+        messagebox.showinfo("Rota Sonucu", mesaj)
+    else:
+        messagebox.showerror("Hata", "Rota bulunamadı!")
+
+btn_rota = tk.Button(root, text="Rotayı Göster", command=rotayi_goster)
+btn_rota.pack(pady=10)
+
+root.mainloop()
