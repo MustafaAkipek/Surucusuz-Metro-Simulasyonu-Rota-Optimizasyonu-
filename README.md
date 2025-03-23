@@ -6,7 +6,7 @@
 Bu proje, sürücüsüz bir metro sistemini simüle ederek rota optimizasyonu sağlamaktadır. Belirtilen iki istasyon arasındaki en iyi rotayı belirlemek için farklı algoritmalar kullanılır. Algoritmalar şunlardır:
 
 - **En az aktarmalı rota (BFS):** En az hat değişimini gerektiren rotayı bulur.
-- **En hızlı rota (A* Algoritması):** En kısa süreyi hesaplar.
+- **En hızlı rota (A\* Algoritması):** En kısa süreyi hesaplar.
 - **En kısa maliyetli rota (Uniform Cost Search - UCS):** En az toplam yolculuk süreli rotayı bulur.
 
 Ayrıca **`networkx`** ve **`matplotlib`** kütüphaneleri kullanılarak metro ağının grafiksel görünümü sağlanır. Kullanıcılar **Tkinter tabanlı GUI** aracılığıyla istasyon seçebilir ve rota optimizasyon kriterlerini belirleyebilir.
