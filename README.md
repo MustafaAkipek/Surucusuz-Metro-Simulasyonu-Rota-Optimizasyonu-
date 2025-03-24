@@ -1,23 +1,46 @@
 # Sürücüsüz Metro Simülasyonu - Rota Optimizasyonu
 
-## Proje Tanıtımı(Türkçe)
-## Project Presentation(English, line 102-238)
+## 1. Proje Başlığı ve Kısa Açıklama(Türkçe)
+## Project Presentation(English, line 128-257)
 
-Bu proje, sürücüsüz bir metro sistemini simüle ederek rota optimizasyonu sağlamaktadır. Belirtilen iki istasyon arasındaki en iyi rotayı belirlemek için farklı algoritmalar kullanılır. Algoritmalar şunlardır:
+Bu proje, sürücüsüz bir metro sistemini simüle ederek rota optimizasyonu sağlamaktadır. Belirtilen iki istasyon arasındaki en iyi rotayı belirlemek için farklı algoritmalar kullanılır. Kullanılan kütüphaneler ve algoritmalar şunlardır:
+
+## 2. Kullanılan Teknolojiler ve Kütüphaneler
+Proje Python programlama dili kullanılarak geliştirilmiştir. Aşağıdaki kütüphaneler ve veri yapıları kullanılmıştır:
+- **heapq**: Öncelikli kuyruk yapısını kullanarak A* algoritmasında etkin yol bulma işlemi gerçekleştirilmiştir.
+- **collections**: BFS algoritması için deque veri yapısı kullanılmıştır.
+- **matplotlib**: Metro hatlarını ve istasyonları görselleştirmek için kullanılmıştır.
+- **networkx**: Graf yapısını yönetmek ve analiz etmek için kullanılmıştır.
 
 - **En az aktarmalı rota (BFS):** En az hat değişimini gerektiren rotayı bulur.
 - **En hızlı rota (A\* Algoritması):** En kısa süreyi hesaplar.
 - **En kısa maliyetli rota (Uniform Cost Search - UCS):** En az toplam yolculuk süreli rotayı bulur.
 
-Ayrıca **`networkx`** ve **`matplotlib`** kütüphaneleri kullanılarak metro ağının grafiksel görünümü sağlanır. Kullanıcılar **Tkinter tabanlı GUI** aracılığıyla istasyon seçebilir ve rota optimizasyon kriterlerini belirleyebilir.
+## 3. Algoritmaların Çalışma Mantığı
+### BFS Algoritması
+BFS (Breadth-First Search) algoritması, en kısa yol bulma işleminde kullanılmıştır. Algoritma şu şekilde çalışır:
+1. Başlangıç düğümünden itibaren kuyruk veri yapısına (queue) eklenir.
+2. Kuyruk boşalana kadar döngü devam eder.
+3. Her iterasyonda bir düğüm çıkartılır ve komşu düğümler ziyaret edilir.
+4. Ziyaret edilen her düğüm için mesafe güncellenir ve kuyrukta işlenmek üzere eklenir.
+5. Hedef düğüme ulaşıldığında en kısa yol elde edilir.
+
+### A* Algoritması
+A* (A Star) algoritması, hem BFS hem de Dijkstra algoritmalarının birleşimi olarak çalışır ve daha optimize bir yol bulma algoritmasıdır.
+1. **Başlangıç noktası**, öncelikli kuyruğa eklenir.
+2. **G fonskiyonu (g(n))**: Başlangıçtan düğüme olan mesafeyi hesaplar.
+3. **H fonksiyonu (h(n))**: Düğümden hedefe olan tahmini mesafeyi (heuristic) belirler.
+4. **F fonksiyonu (f(n) = g(n) + h(n))**: En iyi tahmini mesafeyi belirler.
+5. Öncelikli kuyrukta en düşük `f(n)` değerine sahip düğüm işleme alınır.
+6. Hedefe ulaşıldığında en kısa ve en optimize yol belirlenmiş olur.
 
 ## Özellikler ve Fonksiyonlar
 
 - **Metro istasyon ve hat yönetimi**  
 - **Rota optimizasyon algoritmaları:**  
-  - **BFS:** En az aktarmalı rota
-  - **A\***: En hızlı rota
-  - **UCS:** En kısa maliyetli rota
+- **BFS:** En az aktarmalı rota
+- **A\***: En hızlı rota
+- **UCS:** En kısa maliyetli rota
 - **Grafiksel metro ağı görünteleme**  
 - **Tkinter tabanlı kullanıcı arayüzü**
 
@@ -30,6 +53,9 @@ Ayrıca **`networkx`** ve **`matplotlib`** kütüphaneleri kullanılarak metro a
 - **`tkinter`** (Grafik arayüz)
 - **`networkx`** (Graf yapısı)
 - **`matplotlib`** (Grafikleri görüntüleme)
+
+## 4. Örnek Kullanım ve Test Sonuçları
+Projedeki kod parçaları **a_star_deneme.py** ve **bfs_deneme.py** dosyalarında algoritmaların nasıl çalıştığı gösterilmektedir.
 
 ## Gereksinimler
 
