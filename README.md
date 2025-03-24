@@ -34,6 +34,19 @@ A* (A Star) algoritması, hem BFS hem de Dijkstra algoritmalarının birleşimi 
 5. Öncelikli kuyrukta en düşük `f(n)` değerine sahip düğüm işleme alınır.
 6. Hedefe ulaşıldığında en kısa ve en optimize yol belirlenmiş olur.
 
+### UCS Algoritması
+UCS (Uniform Cost Search) algoritması, ağırlıklı graflarda en kısa yolu bulmak için kullanılan bir yöntemdir. Aşağıdaki adımlarla çalışır:
+1. Başlangıç düğümü bir öncelik kuyruğuna eklenir ve maliyet `0` olarak ayarlanır.
+2. Kuyruktaki en düşük maliyetli düğüm işleme alınır.
+3. İşlenen düğümün komşuları keşfedilir ve yeni maliyetler hesaplanarak kuyruğa eklenir.
+4. Eğer hedef düğüme ulaşıldıysa, o ana kadar bulunan en düşük maliyetli yol belirlenmiş olur.
+
+### Neden Bu Algoritmaları Kullandık?
+- **BFS**, ağırlıksız graf yapılarında en kısa yolu garantili olarak bulduğu için tercih edilmiştir.
+- **A***, ağırlıklı graf yapılarında daha hızlı ve optimize sonuçlar ürettiği için kullanılmıştır.
+- **UCS**, ağırlıklı graflarda en düşük maliyetli yolu bulmada etkili olduğu için eklenmiştir.
+
+
 ## Özellikler ve Fonksiyonlar
 
 - **Metro istasyon ve hat yönetimi**  
